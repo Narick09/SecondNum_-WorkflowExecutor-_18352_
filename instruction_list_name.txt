@@ -1,0 +1,5 @@
+desc
+45 = read in.txt
+5 = write out.txt
+csed
+->45 -> 5
