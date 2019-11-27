@@ -20,31 +20,41 @@ public:
 
 class Validator {};
 
+
 class IWorker {
-	static size_t counter;
 protected:
-	std::string * resorce;//Res*
-public:
-	void initData()
+//	size_t *counter;
+	static std::string * resorce;//Res*
+	/*static*//* void initData()
 	{
+		delete resorce;
 		resorce = new std::string;
-		counter = 1;
-		counter++;
+		std::cout << "initData\n";
 	}
+	*/
+//	std::string * getStr();
+public:
+	//	size_t *counter;
+//	std::string * resorce;//Res*
+//	std::string * getStr();
+	
 	//	IWorker() {};					//зочем?
+
 	virtual void toDo(std::vector<std::string> V) = 0;
 };
 
+
 class Read : public IWorker {
 public:
-//	Read() {}
+	Read();
 	void toDo(std::vector<std::string> V);
 	~Read();
 };
 class Write : public IWorker {
 public:
-//	Write() {}
+	Write() {}
 	void toDo(std::vector<std::string> V);
+
 };
 class Grep :public IWorker {
 public:
