@@ -1,10 +1,12 @@
 #include"LorentzVector.h"
 
-// *IN FILE instruction_list_name*
-//desc
-// 45 = read 1.txt
-// 5 = write 2.txt
-//csed
+//class Res {}; // class for resources
+
+// IN FILE instruction_list_name
+// 1 = read 1.txt
+// 2 = grep hello
+// 4 = sort
+// 4 = write 2.txt
 // 1->4->2->3
 
 using namespace std;
@@ -18,7 +20,7 @@ int main() {
 
 //	inst["grep"] = new Grep;
 //	inst["sort"] = new Sort;
-//	inst["replace"] = new Replace;
+	inst["replace"] = new Replace;
 //	inst["dump"] = new Dump;
 
 	
@@ -39,9 +41,9 @@ int main() {
 //			std::cout << com << "\n";
 			std::vector<std::string> arg = parser.getArgs(C); //{"1.txt"}
 //			std::cout << com << "\n";
-//			for (size_t i = 0; i < arg.size(); i++) {
-//				std::cout << i << ": " << arg[i] << "\n";
-//			}
+			for (size_t i = 0; i < arg.size(); i++) {
+				std::cout << i << ": <" << arg[i] << ">\n";
+			}
 			IWorker * worker = nullptr;
 			worker = inst[com];
 			programm[num] = pair<IWorker*, vector<string>>(worker, arg);
@@ -49,15 +51,27 @@ int main() {
 		}
 	}
 
-	// here will be a validator
+	// validator
 
-	size_t com_num = 45; //45 - > 5
-
+	size_t com_num = 45; //1->4->2->3
 	pair<IWorker*, vector<string>> & s = programm[com_num];
 	s.first->toDo(s.second);
 	com_num = 5;
 	pair<IWorker*, vector<string>> & s2 = programm[com_num];
-//	s2.first->toDo(s2.second);									//trables
+	s2.first->toDo(s2.second);
+	com_num = 2;
+	pair<IWorker*, vector<string>> & s3 = programm[com_num];
+	s3.first->toDo(s3.second);
+	com_num = 4;
+	pair<IWorker*, vector<string>> & s4 = programm[com_num];
+	s4.first->toDo(s4.second);
+	com_num = 6;
+	pair<IWorker*, vector<string>> & s5 = programm[com_num];
+	s5.first->toDo(s5.second);
+
+	delete inst["read"];
+	delete inst["write"];
+	delete inst["replace"];
 	system("pause");
 	return 0;
 }
