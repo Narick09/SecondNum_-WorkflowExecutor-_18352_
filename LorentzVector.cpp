@@ -69,7 +69,8 @@ std::string Parser::getNextComand() {				//change if we need more than 1 block
 }
 
 size_t Parser::getComandNum(std::string& str) {
-	//try from stoi();
+	//преобразование стринг в инт
+	//ловим исключение из stoi();
 	size_t num = 0;
 	size_t tmp = static_cast<size_t>(stoi(str, &num));
 	std::string tmpStr = str.substr(num);				//substr returned substring 
@@ -149,29 +150,70 @@ Parser::~Parser() {
 	workFile.close();
 }
 //----------------------------------------------------------------------------------------------------------------------
+std::string * IWorker::resorce = nullptr;
+Read::~Read() {
+	delete []this->resorce;
+}
+Read::Read(){
+	delete resorce;
+	resorce = new std::string;
+	std::cout << "initData\n";;
+}
+
 
 void Read::toDo(std::vector<std::string> V) {
 	std::ifstream inputFile(V[0]);
 	std::string some;
 	std::string someTmp;
-	int i = 0;
-	resorce = new std::string;
-	inputFile >> some;
+	size_t i = 0;
+//	this->initData();
+//	resorce = new std::string;
+	inputFile >> some;				//форматирует строку(если вначале пробел, удаляет его)
+	char tmpC = inputFile.peek();
 	while (!inputFile.eof()) {
-		*resorce += (some + '\n');
+		someTmp += (some + tmpC);
 		inputFile >> some;
+		tmpC = inputFile.peek();
 	}
-	std::cout << *resorce << "\n";
+//	(resorce)->resize(someTmp.size());
+//	for (i = 0; i < someTmp.size(); i++) {
+//		(*resorce)[i] = someTmp[i];
+//	}
+	*resorce = someTmp;
+	std::cout << *resorce << "\nadress of string: " << resorce << "\n";
+
 	inputFile.close();
 }
 
 void Write::toDo(std::vector<std::string> V) {
 	std::ofstream OutFile(V[0]);
-
-	OutFile << *resorce;					//how it will work??
-	OutFile.close();
+	if (OutFile.is_open()) {
+//		OutFile.put((*resorce)[0]);					//how it will work??
+//		std::cout << *resorce << "\n";
+		OutFile << *resorce;
+		OutFile.close();
+	}
+	else
+		std::cout << "\nOutPut File Not Found\n";
 }
 
-void Grep::toDo(std::vector<std::string> V) {
 
+//нид ту чейнджЖ
+void Replace::toDo(std::vector<std::string> V) {
+	
+	size_t position_in_str = 0;
+	size_t position_next_start = 0;
+
+	while (position_next_start < std::string::npos) {
+		position_in_str = resorce->find(V[0], position_next_start);
+		if (position_in_str == std::string::npos) {
+			break;
+		}
+		position_next_start = position_in_str + V[0].size();
+		std::cout << "from replace: from "<< position_in_str <<" to " << position_next_start <<" <" << resorce->substr(position_in_str, V[0].size()) << ">\n";
+		char tmp = (*resorce)[position_next_start];
+		if (tmp == ' ' || tmp == '\n' || tmp == '\0')
+			resorce->replace(position_in_str, V[0].size(), V[1]);
+	}
 }
+
