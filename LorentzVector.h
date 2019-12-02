@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include <fstream>
+#include<algorithm>
 
 class Parser {
 	std::ifstream workFile;
@@ -16,22 +17,28 @@ public:
 	std::string getComandName(std::string& str);
 	std::vector<std::string> getArgs(std::string& str);
 	~Parser();
-};
+	const size_t getNum(size_t ind) const;
+	const size_t getsize() const;
 
-class Validator {};
+};
+class IWorker;
+class Validator {
+//	std::map<size_t, std::pair<IWorker*, std::vector<std::string>>> & m;
+//	std::map<std::string, IWorker *> &i;
+	const Parser& p;
+	std::map<size_t, std::string> & check;
+public:
+	Validator(std::map<size_t, std::string> & other, const Parser& otherP);
+	void correctBlocks();
+};
 
 
 class IWorker {
 protected:
 //	size_t *counter;
 	static std::string * resorce;//Res*
-	/*static*//* void initData()
-	{
-		delete resorce;
-		resorce = new std::string;
-		std::cout << "initData\n";
-	}
-	*/
+	void initData();
+	
 //	std::string * getStr();
 public:
 	//	size_t *counter;
@@ -77,3 +84,7 @@ public:
 //	Replace() {}
 	void toDo(std::vector<std::string> V);
 };
+
+//ловить исключения
+//проверить память
+//
