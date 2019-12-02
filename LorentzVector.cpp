@@ -17,39 +17,47 @@ std::string Parser::getNextComand() {				//change if we need more than 1 block
 
 	workFile >> s;
 
-	if (s == "csed") {								//change if we need more than 1 block 
-//		std::cout << "csed--------------------------------------------------------------------------------------\n";
+	if (s == "csed") {								//change if we need more than 1 block
 		std::string numberString = this->getNextComand();
-
-		this->sizeOfNumbers = (numberString.size() / 2) + 1;			//may be too many member
+//		std::cout << "string in csed: <" << numberString << ">\n";
+		this->sizeOfNumbers =( numberString.size() / 2) + 1;
 		numbers = new size_t[this->sizeOfNumbers];
 
 		size_t NotANumber = 0;
-		char* tmpString = new char[numberString.size()];
+//		char* tmpString = new char[numberString.size()];
 		size_t i = 0;
-		for (i = 0; i < numberString.size(); i++) {
-			while (!isdigit(numberString[0])) {
+
+		while(i < numberString.size()) {
+			while (!isdigit(numberString[0])){
 				std::string tmpString = numberString.erase(0, 1);
 				numberString.swap(tmpString);
 			}
+			if (numberString.empty()) {
+//				std::cout<< "empty\n";
+				break;
+			}
+
 			this->numbers[i] = static_cast<size_t>(stoi(numberString, &NotANumber));
 
 			std::string tmpString = numberString.erase(0, NotANumber);
 			numberString.swap(tmpString);
+			i++;
 		}
+		
 //		i++;
 		size_t* tmp = new size_t[i];
 		for (size_t g = 0; g < i; g++)
-			tmp[g] = this->numbers[g];
+			tmp[g] = this->numbers[g]; 
+		this->sizeOfNumbers = i;
 		delete[]numbers;
 		numbers = tmp;
 
-//		for (size_t g = 0; g < i; g++)
-//			std::cout << this->numbers[g] << " ";
-//		std::cout << "\n";
+		for (size_t g = 0; g < i; g++)
+			std::cout << this->numbers[g] << " ";
+		std::cout << "\n";
 
 		s = "\0";
-		delete[]tmpString;
+//		delete[]tmpString;
 	}
 	else if (s == "desc") {
 		s = this->getNextComand();
@@ -149,17 +157,31 @@ Parser::~Parser() {
 		delete[] numbers;
 	workFile.close();
 }
-//----------------------------------------------------------------------------------------------------------------------
+
+const size_t Parser::getNum(size_t ind) const{
+//	size_t q = numbers[ind];
+	return numbers[ind];
+}
+const size_t Parser::getsize() const {
+	return sizeOfNumbers;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------
 std::string * IWorker::resorce = nullptr;
+void IWorker::initData()
+{
+	delete resorce;
+	resorce = new std::string;
+	//		std::cout << "initData\n";
+}
 Read::~Read() {
 	delete []this->resorce;
 }
 Read::Read(){
-	delete resorce;
-	resorce = new std::string;
-	std::cout << "initData\n";;
+//	delete resorce;
+	initData();
+//	resorce = new std::string;
+//	std::cout << "initData\n";
 }
-
 
 void Read::toDo(std::vector<std::string> V) {
 	std::ifstream inputFile(V[0]);
@@ -188,8 +210,17 @@ void Read::toDo(std::vector<std::string> V) {
 void Write::toDo(std::vector<std::string> V) {
 	std::ofstream OutFile(V[0]);
 	if (OutFile.is_open()) {
-//		OutFile.put((*resorce)[0]);					//how it will work??
-//		std::cout << *resorce << "\n";
+		OutFile << *resorce;
+		OutFile.close();
+		initData();
+	}
+	else
+		std::cout << "\nOutPut File Not Found\n";
+}
+
+void Dump::toDo(std::vector<std::string> V) {
+	std::ofstream OutFile(V[0]);
+	if (OutFile.is_open()) {
 		OutFile << *resorce;
 		OutFile.close();
 	}
@@ -197,10 +228,8 @@ void Write::toDo(std::vector<std::string> V) {
 		std::cout << "\nOutPut File Not Found\n";
 }
 
-
 //нид ту чейнджЖ
 void Replace::toDo(std::vector<std::string> V) {
-	
 	size_t position_in_str = 0;
 	size_t position_next_start = 0;
 
@@ -210,10 +239,132 @@ void Replace::toDo(std::vector<std::string> V) {
 			break;
 		}
 		position_next_start = position_in_str + V[0].size();
-		std::cout << "from replace: from "<< position_in_str <<" to " << position_next_start <<" <" << resorce->substr(position_in_str, V[0].size()) << ">\n";
+//		std::cout << "from replace: from "<< position_in_str <<" to " << position_next_start <<" <" << resorce->substr(position_in_str, V[0].size()) << ">\n";
 		char tmp = (*resorce)[position_next_start];
 		if (tmp == ' ' || tmp == '\n' || tmp == '\0')
 			resorce->replace(position_in_str, V[0].size(), V[1]);
 	}
 }
 
+//not worked
+void Grep::toDo(std::vector<std::string> V) {
+/*	std::vector<std::string> s;
+	size_t i = 0;
+	size_t q = 0;
+	std::cout << "sort----------------------------------------------\n" << *resorce << "\n";
+	//	std::stringstream sw;
+	while (q != std::string::npos) {
+		q = resorce->find('\n', i);
+		std::cout << q << "\n";
+		if (q != std::string::npos) {
+			s.push_back(resorce->substr(i, q - i + 1));
+
+		}
+		else {
+			s.push_back(resorce->substr(i));
+			break;
+		}
+		if (q == std::string::npos) {
+			break;
+		}
+
+		++q;
+		i = q;
+	}
+	std::string tmpStr;
+	//	s.shrink_to_fit();
+	size_t tmp = s.size();
+
+	//	for (i = 0; i < tmp; i++) {
+	//		std::cout << s[i];
+	//		tmpStr += s[i];
+	//	}
+	std::cout << *resorce << " \nnot sorted\n";
+
+	std::sort(s.begin(), s.end());
+	for (i = 0; i < tmp; i++) {
+		//		std::cout << "2";
+		tmpStr += s[i];
+	}
+
+	std::cout << tmpStr << " \nsorted\n";
+	*resorce = tmpStr;
+	*/
+}
+
+//not correct(there are no '\n' before the end of string 
+void Sort::toDo(std::vector<std::string> V) {
+	std::vector<std::string> s;
+	size_t i = 0;
+	size_t q = 0;
+	std::cout << "sort----------------------------------------------\n" << *resorce << "\n";
+//	std::stringstream sw;
+	while (q != std::string::npos) {
+		q = resorce->find('\n',i);
+		std::cout << q << "\n";
+		if (q != std::string::npos) {
+			s.push_back(resorce->substr(i, q - i + 1));
+
+		}
+		else {
+			s.push_back(resorce->substr(i));
+			break;
+		}
+		if (q == std::string::npos) {
+			break;
+		}
+			
+		++q;
+		i = q;
+	}
+	std::string tmpStr;
+//	s.shrink_to_fit();
+	size_t tmp = s.size();
+
+//	for (i = 0; i < tmp; i++) {
+//		std::cout << s[i];
+//		tmpStr += s[i];
+//	}
+	std::cout << *resorce << " \nnot sorted\n";
+
+	std::sort(s.begin(), s.end());
+	for (i = 0; i < tmp; i++) {
+//		std::cout << "2";
+		tmpStr += s[i];
+	}
+//	i++;
+//	tmpStr += ('\n' + s[i + 1]);
+	std::cout << tmpStr << " \nsorted\n";
+	*resorce = tmpStr;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Validator::Validator(std::map<size_t, std::string> & other, const Parser& otherP) : check(other), p(otherP) {}
+
+void Validator::correctBlocks() {
+	size_t tmpSize = p.getsize();//check.capacity();
+//	m.find()
+//	size_t countRead = 0;
+//	size_t countWrite = 0;
+
+	if ((check[p.getNum(0)] != "read") || (check[p.getNum(p.getsize() - 1)] != "write")) {			//out of range
+		//throw error of "read -> write"
+		std::cout << "error of read - > write--------------------------------------------------------------------------\n";
+	}
+
+	for (size_t i = 1; i < tmpSize - 1; i++) {								//для нескольких блоков
+		//тут нужно чисто риды врайты проверить или с дампом что-то тоже сделать надо?
+		//а вообще, нужно ли это чекать?
+		//size_t tmpInd = check[i].first;//check[i].first;//p.getNum(i);//check[i].first;
+//		check[p.getNum(i)];
+
+//		m[tmpInd].first;
+//		std::string tmpStr = check[i].second;			//out of range
+//		m.find(tmpInd);
+//		if ((tmpStr == "read") && (check[check[i - 1].first].second != "write")){
+			//throw error "read -> write"
+//			std::cout << "error of read - > write------------------------------------------------------------------------------------------------------------\n";
+//		}
+
+	}
+}
