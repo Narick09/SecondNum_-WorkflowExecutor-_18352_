@@ -4,6 +4,8 @@
 #include <map>
 #include <fstream>
 #include<algorithm>
+#include<exception>
+#include<stdexcept>
 
 class Parser {
 	std::ifstream workFile;
@@ -23,8 +25,8 @@ public:
 };
 class IWorker;
 class Validator {
-//	std::map<size_t, std::pair<IWorker*, std::vector<std::string>>> & m;
-//	std::map<std::string, IWorker *> &i;
+	//	std::map<size_t, std::pair<IWorker*, std::vector<std::string>>> & m;
+	//	std::map<std::string, IWorker *> &i;
 	const Parser& p;
 	std::map<size_t, std::string> & check;
 public:
@@ -35,16 +37,16 @@ public:
 
 class IWorker {
 protected:
-//	size_t *counter;
+	//	size_t *counter;
 	static std::string * resorce;//Res*
 	void initData();
-	
-//	std::string * getStr();
+
+	//	std::string * getStr();
 public:
 	//	size_t *counter;
 //	std::string * resorce;//Res*
 //	std::string * getStr();
-	
+
 	//	IWorker() {};					//зочем?
 
 	virtual void toDo(std::vector<std::string> V) = 0;
@@ -65,26 +67,29 @@ public:
 };
 class Grep :public IWorker {
 public:
-//	Grep() {}
+	//	Grep() {}
 	void toDo(std::vector<std::string> V);
 
 };
 class Sort :public IWorker {
 public:
-//	Sort() {}
+	//	Sort() {}
 	void toDo(std::vector<std::string> V);
 };
 class Dump :public IWorker {
 public:
-//	Dump() {}
+	//	Dump() {}
 	void toDo(std::vector<std::string> V);
 };
 class Replace :public IWorker {
 public:
-//	Replace() {}
+	//	Replace() {}
 	void toDo(std::vector<std::string> V);
 };
 
+class MyError : std::exception {
+	const char* what();
+};
 //ловить исключения
 //проверить память
 //
