@@ -11,13 +11,15 @@ int main() {
 	inst["sort"] = new Sort;
 	inst["replace"] = new Replace;
 	inst["dump"] = new Dump;
+	IWorker * worker = nullptr;
 
-	map<size_t, pair<IWorker*, vector<string>>> programm; // num-> Worker, agrs
-	Parser parser("instruction_list_name.txt"); // progr
-	char endOfBlock = '\0';
-	std::map<size_t, std::string> toValid;
-	//надо будет запихать в еще больший тхроу, чтобы ес чо отловить крит ошибку, и чтобы все на**й удалилось, если эта крит ошибка произойдетЮ ибо не**й
 	try {
+		map<size_t, pair<IWorker*, vector<string>>> programm; // num-> Worker, agrs
+		Parser parser("instruction_list_name.txt"); // progr		//зависает, если не может открыть файл
+		char endOfBlock = '\0';
+		std::map<size_t, std::string> toValid;
+		//в большом трае чтобы ес чо отловить крит ошибку, и чтобы все на**й удалилось, если эта крит ошибка произойдет, ибо не**й
+	
 		while (!parser.endOfInstruction()) // TRUE if END OF INSTRUCTION
 		{
 			std::string C = parser.getNextComand(); //1 = read 1.txt = std::regexp
@@ -33,44 +35,46 @@ int main() {
 	//			for (size_t i = 0; i < arg.size(); i++) {
 	//				std::cout << i << ": <" << arg[i] << ">\n";
 	//			}
-				IWorker * worker = nullptr;
+				worker = nullptr;
 				//try
 				worker = inst.at(com);
-
+				
 				try {
 					programm.at(num);
-					MyError Equalnums; // если у нас будут одинаковые номера, то програм ат не кинет оут оф рейндж - кидаем ошибку одинаковых чисел
+					MyError Equalnums;// если у нас будут одинаковые номера, то програм ат не кинет оут оф рейндж - кидаем ошибку одинаковых чисел
 					throw Equalnums;	//если не будет одинаковых номеров, то ловим оут оф рейндж и там 
 				}
 				catch (MyError const& e) {
-					throw e;//если есть одинковые циферки, ловим и обрабатываем выше(чтобы все остальное удалилось к х**м
+					throw e;//если есть одинковые циферки, ловим и обрабатываем выше(чтобы все остальное удалилось к х**м)
 				}
-				catch (std::out_of_range const& e) {
+				catch (std::out_of_range const&) {
 					programm[num] = pair<IWorker*, vector<string>>(worker, arg);
 				}
-
+				//отправлеяется в валидатор, которые чекает чтобы 1м был рид, последним - врайт(+ можно прописать, чтобы он чекал, что послед перед ридом идет врайт
 				if ((com == "read") || (com == "write")) {
 					toValid[num] = com;
 				}
 			}
 		}
+
+		//try
+		Validator check(toValid, parser);
+		check.correctBlocks();
+
+		size_t sizeOfNumsOfProg = parser.getsize();
+		std::cout << sizeOfNumsOfProg;
+		
+		for (size_t i = 0; i < sizeOfNumsOfProg; i++) {
+			size_t com_num = parser.getNum(i);
+			pair<IWorker*, vector<string>> & s = programm[com_num];
+			s.first->toDo(s.second);
+		}
+	}
+	catch (std::exception const& Er) {
+		Er.what();
 	}
 	catch (...) {
 		std::cout << "unknown error\n";
-	}
-	
-	//try
-	Validator check(toValid, parser);
-	check.correctBlocks();
-
-
-	size_t sizeOfNumsOfProg = parser.getsize();
-	std::cout << sizeOfNumsOfProg;
-
-	for (size_t i = 0; i < sizeOfNumsOfProg; i++) {
-		size_t com_num = parser.getNum(i);
-		pair<IWorker*, vector<string>> & s = programm[com_num];
-		s.first->toDo(s.second);
 	}
 
 	delete inst["read"];
@@ -79,6 +83,7 @@ int main() {
 	delete inst["sort"];
 	delete inst["dump"];
 	delete inst["grep"];
+	delete worker;
 //	system("pause");
 	return 0;
 }
