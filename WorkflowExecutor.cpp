@@ -45,19 +45,19 @@ int main() {
 					throw Equalnums;	//если не будет одинаковых номеров, то ловим оут оф рейндж и там 
 				}
 				catch (MyError const& e) {
-					throw e;//если есть одинковые циферки, ловим и обрабатываем выше(чтобы все остальное удалилось к х**м)
+					throw e;//если есть одинковые циферки, ловим и обрабатываем выше(чтобы все остальное удалилось)
 				}
 				catch (std::out_of_range const&) {
+//					std::cout << "tried----------------------------------------------------------------------------------------------------";
 					programm[num] = pair<IWorker*, vector<string>>(worker, arg);
 				}
-				//отправлеяется в валидатор, которые чекает чтобы 1м был рид, последним - врайт(+ можно прописать, чтобы он чекал, что послед перед ридом идет врайт
+				//отправлеяется в валидатор, которые чекает чтобы 1м был рид, последним - врайт(+ можно прописать, чтобы он чекал, что послед перед ридом идет врайт)
 				if ((com == "read") || (com == "write")) {
 					toValid[num] = com;
 				}
 			}
 		}
 
-		//try
 		Validator check(toValid, parser);
 		check.correctBlocks();
 
@@ -71,7 +71,7 @@ int main() {
 		}
 	}
 	catch (std::exception const& Er) {
-		Er.what();
+		std::cout << Er.what() << "\n";
 	}
 	catch (...) {
 		std::cout << "unknown error\n";
@@ -83,11 +83,10 @@ int main() {
 	delete inst["sort"];
 	delete inst["dump"];
 	delete inst["grep"];
-	delete worker;
+//	delete worker;
 //	system("pause");
 	return 0;
 }
-
 
 //dump <filename> - сохраняет строку в указанном файле и передает ее дальше
 //writefile <filename> – запись текста в файл => после, удаляем строку
