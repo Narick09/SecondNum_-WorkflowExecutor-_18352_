@@ -1,9 +1,11 @@
 #include "Interfaces.h"
+
 Parser::Parser(const std::string FileName) {
 	workFile.open(FileName, std::ios_base::in);
 	if (!workFile.is_open()) {
-		//throw ...
-		std::cout << "file is not open";
+		//почему-то когда ловит в майне, не выводит сообщение...
+		throw std::invalid_argument(FileName);//мб трабл в том, что тхроу удаляет этот объект, идя по стеку. как тогда бросать?
+//		std::cout << "file is not open";
 	}
 	numbers = nullptr;
 }
@@ -347,10 +349,8 @@ void Validator::correctBlocks() {
 //	size_t countWrite = 0;
 
 	if ((check[p.getNum(0)] != "read") || (check[p.getNum(p.getsize() - 1)] != "write")) {			//out of range
-		//throw error of "read -> write"
-		std::cout << "error of read - > write--------------------------------------------------------------------------\n";
+		throw std::invalid_argument("error of read - > write");//not runtime because we are throwing it before program will do smth
 	}
-
 	for (size_t i = 1; i < tmpSize - 1; i++) {								//for several(нескольких) blocks
 		//тут нужно чисто риды врайты проверить или с дампом что-то тоже сделать надо?
 		//size_t tmpInd = check[i].first;//check[i].first;//p.getNum(i);//check[i].first;
@@ -367,6 +367,12 @@ void Validator::correctBlocks() {
 	}
 }
 //---------------------------------------------------------------------------------------------------------------
-const char *MyError::what() {
+const char *MyError::what() const{
 	return "Equal nums of commands\n";
 }
+/*
+FileOpenError::FileOpenError(std::string const& FileWithError):FWE(FileWithError) {}
+const char * FileOpenError::what() {
+	return FWE + " is not open";
+}
+*/
