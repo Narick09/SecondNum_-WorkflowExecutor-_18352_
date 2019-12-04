@@ -88,8 +88,17 @@ public:
 };
 
 class MyError : std::exception {
+	const char* what() const;
+};
+
+/*
+class FileOpenError : std::exception {
+	std::string & FWE;
+public:
+	FileOpenError(std::string& FileWithError);
 	const char* what();
 };
+*/
 //ловить исключения
 //проверить память
 //
