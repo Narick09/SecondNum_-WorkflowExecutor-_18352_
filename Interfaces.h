@@ -6,7 +6,11 @@
 #include<algorithm>
 #include<exception>
 #include<stdexcept>
-
+//MemoryLeaks
+#define _CRTDBG_MAP_ALLOC
+#include <cstdlib>
+#include <crtdbg.h>
+//---------------------------
 class Parser {
 	std::ifstream workFile;
 	size_t* numbers;
@@ -21,7 +25,6 @@ public:
 	~Parser();
 	const size_t getNum(size_t ind) const;
 	const size_t getsize() const;
-
 };
 class IWorker;
 class Validator {
@@ -37,18 +40,9 @@ public:
 
 class IWorker {
 protected:
-	//	size_t *counter;
-	static std::string * resorce;//Res*
+	static std::string * resorce;
 	void initData();
-
-	//	std::string * getStr();
 public:
-	//	size_t *counter;
-//	std::string * resorce;//Res*
-//	std::string * getStr();
-
-	//	IWorker() {};					//зочем?
-
 	virtual void toDo(std::vector<std::string> V) = 0;
 };
 
@@ -90,15 +84,3 @@ public:
 class MyError : std::exception {
 	const char* what() const;
 };
-
-/*
-class FileOpenError : std::exception {
-	std::string & FWE;
-public:
-	FileOpenError(std::string& FileWithError);
-	const char* what();
-};
-*/
-//ловить исключения
-//проверить память
-//
