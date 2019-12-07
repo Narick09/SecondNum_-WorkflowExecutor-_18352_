@@ -18,40 +18,40 @@ std::string Parser::getNextComand() {
 
 	if (s == "csed") {
 		std::string numberString = this->getNextComand();
+//		std::cout << numberString << "\n";
+		size_t j = 0;
+		size_t NotANumber = 0;
+		size_t i = 0;
 		this->sizeOfNumbers = (numberString.size() / 2) + 1;
 		numbers = new size_t[this->sizeOfNumbers];
 
-		size_t NotANumber = 0;
-		size_t i = 0;
-
-		while (i < numberString.size()) {
-			while (!isdigit(numberString[0])) {
-				std::string tmpString = numberString.erase(0, 1);
-				numberString.swap(tmpString);
+		while (!numberString.empty()) {
+			while (!isdigit(numberString[i])) {
+				i++;
 			}
-			if (numberString.empty()) {
-				break;
+			if (i != 0) {
+				numberString.erase(0, i);
+				i = 0;
+			}
+			
+			if (isdigit(numberString[0])) {
+				this->numbers[j] = static_cast<size_t>(stoi(numberString, &NotANumber));
+				numberString.erase(0, NotANumber);
+				j++;
 			}
 
-			this->numbers[i] = static_cast<size_t>(stoi(numberString, &NotANumber));
-
-			std::string tmpString = numberString.erase(0, NotANumber);
-			numberString.swap(tmpString);
-			i++;
 		}
-		size_t* tmp = new size_t[i];
-		for (size_t g = 0; g < i; g++)
+
+		size_t* tmp = new size_t[j];
+		for (size_t g = 0; g < j; g++)
 			tmp[g] = this->numbers[g];
-		this->sizeOfNumbers = i;
+		this->sizeOfNumbers = j;
 		delete[]numbers;
 		numbers = tmp;
-
-//		for (size_t g = 0; g < i; g++)
-//			std::cout << this->numbers[g] << " ";
-//		std::cout << "\n";
-
+		//for (size_t g = 0; g < this->sizeOfNumbers; g++)
+		//	std::cout << this->numbers[g] << " ";
+		//std::cout << "\n";
 		s = "\0";
-		//		delete[]tmpString;
 	}
 	else if (s == "desc") {
 		s = this->getNextComand();
@@ -205,6 +205,12 @@ void Read::toDo(std::vector<std::string> V) {
 void Write::toDo(std::vector<std::string> V) {
 	std::ofstream OutFile(V[0]);
 	if (OutFile.is_open()) {
+		/*
+		for (int i = 0; i < 1000; i++) {
+			OutFile << " -> 2";
+		}
+		OutFile << "\n";
+		*/
 		OutFile << *resorce;
 		OutFile.close();
 		initData();
@@ -226,7 +232,6 @@ void Dump::toDo(std::vector<std::string> V) {
 		throw std::invalid_argument("\nDump-File " + V[0] + " Not Found\n");
 }
 
-//нид ту чейнджЖ
 void Replace::toDo(std::vector<std::string> V) {
 	size_t position_in_str = 0;
 	size_t position_next_start = 0;
@@ -244,7 +249,6 @@ void Replace::toDo(std::vector<std::string> V) {
 	}
 }
 
-//not worked?
 void Grep::toDo(std::vector<std::string> V) {
 	std::vector<std::string> s;
 	size_t i = 0;
@@ -282,7 +286,6 @@ void Grep::toDo(std::vector<std::string> V) {
 
 }
 
-//vrode robit 
 void Sort::toDo(std::vector<std::string> V) {
 	std::vector<std::string> s;
 	size_t i = 0;
@@ -299,8 +302,6 @@ void Sort::toDo(std::vector<std::string> V) {
 	}
 	std::string tmpStr;
 	size_t tmp = s.size();
-
-//	std::cout << *resorce << " \nnot sorted\n";
 
 	std::sort(s.begin(), s.end());
 	for (i = 0; i < tmp; i++) {
