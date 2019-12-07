@@ -3,9 +3,7 @@
 Parser::Parser(const std::string FileName) {
 	workFile.open(FileName, std::ios_base::in);
 	if (!workFile.is_open()) {
-		//почему-то когда ловит в майне, не выводит сообщение...
-		throw std::invalid_argument(FileName);//мб трабл в том, что тхроу удаляет этот объект, идя по стеку. как тогда бросать?
-//		std::cout << "file is not open";
+		throw std::invalid_argument("File \"" + FileName + "\" can not be open.");
 	}
 	numbers = nullptr;
 }
@@ -13,19 +11,17 @@ bool Parser::endOfInstruction() {
 	return workFile.eof();
 }
 
-std::string Parser::getNextComand() {				//change if we need more than 1 block
+std::string Parser::getNextComand() {
 	std::string s;
 
 	workFile >> s;
 
-	if (s == "csed") {								//change if we need more than 1 block
+	if (s == "csed") {
 		std::string numberString = this->getNextComand();
-		//		std::cout << "string in csed: <" << numberString << ">\n";
 		this->sizeOfNumbers = (numberString.size() / 2) + 1;
 		numbers = new size_t[this->sizeOfNumbers];
 
 		size_t NotANumber = 0;
-		//		char* tmpString = new char[numberString.size()];
 		size_t i = 0;
 
 		while (i < numberString.size()) {
@@ -34,7 +30,6 @@ std::string Parser::getNextComand() {				//change if we need more than 1 block
 				numberString.swap(tmpString);
 			}
 			if (numberString.empty()) {
-				//				std::cout<< "empty\n";
 				break;
 			}
 
@@ -44,8 +39,6 @@ std::string Parser::getNextComand() {				//change if we need more than 1 block
 			numberString.swap(tmpString);
 			i++;
 		}
-
-		//		i++;
 		size_t* tmp = new size_t[i];
 		for (size_t g = 0; g < i; g++)
 			tmp[g] = this->numbers[g];
@@ -53,9 +46,9 @@ std::string Parser::getNextComand() {				//change if we need more than 1 block
 		delete[]numbers;
 		numbers = tmp;
 
-		for (size_t g = 0; g < i; g++)
-			std::cout << this->numbers[g] << " ";
-		std::cout << "\n";
+//		for (size_t g = 0; g < i; g++)
+//			std::cout << this->numbers[g] << " ";
+//		std::cout << "\n";
 
 		s = "\0";
 		//		delete[]tmpString;
@@ -65,10 +58,11 @@ std::string Parser::getNextComand() {				//change if we need more than 1 block
 	}
 	else {
 		//throw if first are not number, second are not "=", 3rd are not name etc.
+
 		char tempChar = 0;
 
 		workFile.get(tempChar);
-		for (int i = 0; (tempChar != '\n') /*&& (tempChar != '\0')*/ && !workFile.eof(); i++) {		//may be changed to std::getline(workFile, 
+		for (int i = 0; (tempChar != '\n') /*&& (tempChar != '\0')*/ && !workFile.eof(); i++) {		//may be changed  to std::getline(workFile, 
 			s += tempChar;
 			//			std::cout << "<" << tempChar << ">\n" << s <<"\n";
 			workFile.get(tempChar);
@@ -203,7 +197,7 @@ void Read::toDo(std::vector<std::string> V) {
 	//		(*resorce)[i] = someTmp[i];
 	//	}
 	*resorce = someTmp;
-	std::cout << *resorce << "\nadress of string: " << resorce << "\n";
+//	std::cout << *resorce << "\nadress of string: " << resorce << "\n";
 
 	inputFile.close();
 }
@@ -215,8 +209,11 @@ void Write::toDo(std::vector<std::string> V) {
 		OutFile.close();
 		initData();
 	}
-	else
-		std::cout << "\nOutPut File Not Found\n";
+	else {
+		throw std::invalid_argument("\nOutPut File " + V[0] + " Not Found\n");
+//		std::cout << "\nOutPut File Not Found\n";
+	}
+		
 }
 
 void Dump::toDo(std::vector<std::string> V) {
@@ -226,7 +223,7 @@ void Dump::toDo(std::vector<std::string> V) {
 		OutFile.close();
 	}
 	else
-		std::cout << "\nOutPut File Not Found\n";
+		throw std::invalid_argument("\nDump-File " + V[0] + " Not Found\n");
 }
 
 //нид ту чейнджЖ
@@ -247,132 +244,81 @@ void Replace::toDo(std::vector<std::string> V) {
 	}
 }
 
-//not worked
+//not worked?
 void Grep::toDo(std::vector<std::string> V) {
-	/*	std::vector<std::string> s;
-		size_t i = 0;
-		size_t q = 0;
-		std::cout << "sort----------------------------------------------\n" << *resorce << "\n";
-		//	std::stringstream sw;
-		while (q != std::string::npos) {
-			q = resorce->find('\n', i);
-			std::cout << q << "\n";
-			if (q != std::string::npos) {
-				s.push_back(resorce->substr(i, q - i + 1));
-
-			}
-			else {
-				s.push_back(resorce->substr(i));
-				break;
-			}
-			if (q == std::string::npos) {
-				break;
-			}
-
-			++q;
-			i = q;
-		}
-		std::string tmpStr;
-		//	s.shrink_to_fit();
-		size_t tmp = s.size();
-
-		//	for (i = 0; i < tmp; i++) {
-		//		std::cout << s[i];
-		//		tmpStr += s[i];
-		//	}
-		std::cout << *resorce << " \nnot sorted\n";
-
-		std::sort(s.begin(), s.end());
-		for (i = 0; i < tmp; i++) {
-			//		std::cout << "2";
-			tmpStr += s[i];
-		}
-
-		std::cout << tmpStr << " \nsorted\n";
-		*resorce = tmpStr;
-		*/
-}
-
-//not correct(there are no '\n' before the end of string 
-void Sort::toDo(std::vector<std::string> V) {
 	std::vector<std::string> s;
 	size_t i = 0;
+	std::cout << "grep----------------------------------------------\n";// << *resorce << "\n";
 	size_t q = 0;
-	std::cout << "sort----------------------------------------------\n" << *resorce << "\n";
-	//	std::stringstream sw;
 	while (q != std::string::npos) {
 		q = resorce->find('\n', i);
-		std::cout << q << "\n";
-		if (q != std::string::npos) {
-			s.push_back(resorce->substr(i, q - i + 1));
-
-		}
-		else {
-			s.push_back(resorce->substr(i));
-			break;
-		}
+		s.push_back(resorce->substr(i, q - i) + "\n");
 		if (q == std::string::npos) {
 			break;
 		}
-
 		++q;
 		i = q;
 	}
 	std::string tmpStr;
-	//	s.shrink_to_fit();
+	
+	size_t tmp = s.size();
+	for (i = 0; i < tmp; i++) {
+		size_t position_in_str = 0;
+		size_t position_next_start = 0;
+		while (position_next_start < std::string::npos) {
+			position_in_str = resorce->find(V[0], position_next_start);
+			if (position_in_str == std::string::npos) {
+				break;
+			}
+			position_next_start = position_in_str + V[0].size();
+			//		std::cout << "from replace: from "<< position_in_str <<" to " << position_next_start <<" <" << resorce->substr(position_in_str, V[0].size()) << ">\n";
+			char tmp = (*resorce)[position_next_start];
+			if (tmp == ' ' || tmp == '\n' || tmp == '\0') {
+	//			if()
+	//			tmpStr += s[i];				//придумать алгоритм, ищущий строку со словом
+			}
+		}	
+	}
+
+}
+
+//vrode robit 
+void Sort::toDo(std::vector<std::string> V) {
+	std::vector<std::string> s;
+	size_t i = 0;
+//	std::cout << "sort----------------------------------------------\n";// << *resorce << "\n";
+	size_t q = 0;
+	while (q != std::string::npos) {
+		q = resorce->find('\n', i);
+			s.push_back(resorce->substr(i, q - i) + "\n");
+		if (q == std::string::npos) {
+			break;
+		}
+		++q;
+		i = q;
+	}
+	std::string tmpStr;
 	size_t tmp = s.size();
 
-	//	for (i = 0; i < tmp; i++) {
-	//		std::cout << s[i];
-	//		tmpStr += s[i];
-	//	}
-	std::cout << *resorce << " \nnot sorted\n";
+//	std::cout << *resorce << " \nnot sorted\n";
 
 	std::sort(s.begin(), s.end());
 	for (i = 0; i < tmp; i++) {
-		//		std::cout << "2";
 		tmpStr += s[i];
 	}
-	//	i++;
-	//	tmpStr += ('\n' + s[i + 1]);
-	std::cout << tmpStr << " \nsorted\n";
+//	std::cout << tmpStr << " \nsorted\n";
 	*resorce = tmpStr;
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-
+//--------------------------------------------------------------------------------------------------------------
 Validator::Validator(std::map<size_t, std::string> & other, const Parser& otherP) : check(other), p(otherP) {}
-
 void Validator::correctBlocks() {
-	size_t tmpSize = p.getsize();//check.capacity();
-//	m.find()
-//	size_t countRead = 0;
-//	size_t countWrite = 0;
+	size_t tmpSize = p.getsize();
 
 	if ((check[p.getNum(0)] != "read") || (check[p.getNum(p.getsize() - 1)] != "write")) {			//out of range
 		throw std::invalid_argument("error of read - > write");//not runtime because we are throwing it before program will do smth
 	}
-	for (size_t i = 1; i < tmpSize - 1; i++) {								//for several(нескольких) blocks
-		//тут нужно чисто риды врайты проверить или с дампом что-то тоже сделать надо?
-		//size_t tmpInd = check[i].first;//check[i].first;//p.getNum(i);//check[i].first;
-//		check[p.getNum(i)];
-
-//		m[tmpInd].first;
-//		std::string tmpStr = check[i].second;			//out of range
-//		m.find(tmpInd);
-//		if ((tmpStr == "read") && (check[check[i - 1].first].second != "write")){
-			//throw error "read -> write"
-//			std::cout << "error of read - > write------------------------------------------------------------------------------------------------------------\n";
-//		}
-
-	}
 }
-//---------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------
 const char *MyError::what() const{
 	return "Equal nums of commands\n";
 }
-/*
-FileOpenError::FileOpenError(std::string const& FileWithError):FWE(FileWithError) {}
-const char * FileOpenError::what() {
-	return FWE + " is not open";
-}
-*/
