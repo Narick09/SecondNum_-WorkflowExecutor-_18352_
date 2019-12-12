@@ -1,5 +1,9 @@
 desc
 45 = read in.txt
-5 = write out.txt
+6 = write out.txt
+4 = replace 5a ssSsS
+5 = replace read daer3
+2 = sort
+100 = replace - <----->
 csed
-->45 -> 5
+45 -> 2 -> 100 -> 2 -> 6
